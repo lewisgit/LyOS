@@ -1,11 +1,19 @@
 .code16
 .globl start
 start:
-	cli
+
+	movw $hellomsg,%ax
+	movw $12,%bx
+	pushw %bx
+	pushw %ax
+	call printmsg
+	
 	xorw %ax，%ax
 	movw %ax, %ds
 	movw %ax, %es
 	movw %ax, %ss
+
+
 
 seta20_1:
 	inb $0x64, %al
@@ -41,7 +49,7 @@ start32:
 	movew %eax,fs
 
 	movl $start,%esp
-	call bootmain
+;	call bootmain
 
 spin: jmp spin
 
@@ -60,3 +68,20 @@ gdtptr:
 	.word (gdtptr-gdt-1)
 	.long gdt
 
+
+printmsg:
+	pushw %bp
+	movw %sp,%bp
+	movw 4(%bp),%ax
+	movw 6(%bp),%bx
+	movw %ax,%bp
+	movw %bx,%cx
+	movw $0x01301,%ax
+	movw $0x000c,%bx
+	movw $0 %dl
+	int $0x10
+	ret
+	
+hellomsg:
+	.byte "hello world!"
+	
