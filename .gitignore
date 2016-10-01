@@ -1,1 +1,3 @@
+bootblock
 *.o
+*.asm

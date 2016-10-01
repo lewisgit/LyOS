@@ -12,3 +12,5 @@ bootblock: bootasm.s
 	$(OBJDUMP) -S bootblock.o > bootblock.asm
 	$(OBJCOPY) -S -O binary -j .text bootblock.o bootblock
 
+a.img: bootblock
+	dd if=bootblock of=a.img bs=512 count=1 conv=notrunc

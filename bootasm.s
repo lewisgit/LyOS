@@ -34,11 +34,29 @@ seta20_2:
 lgdt gdtptr
 
 movl %cr0,%eax
-orl $0x2,%eax
+orl $1,%eax
 movl %eax,%cr0
 
-ljmp $0x08,$start32
+ljmp $8,$start32
 
+
+
+printmsg:
+        pushw %bp
+        movw %sp,%bp
+        movw 4(%bp),%ax
+        movw 6(%bp),%bx
+        movw %ax,%bp
+        movw %bx,%cx
+        movw $0x01301,%ax
+        movw $0x000c,%bx
+        movb $0,%dl
+        int $0x10
+        popw %bp
+        ret
+
+
+.code32
 start32:
 	movw $0x10,%ax
 	movw %ax,%ds
@@ -51,20 +69,6 @@ start32:
 	movl $start,%esp
 
 spin: jmp spin
-
-printmsg:
-	pushw %bp
-	movw %sp,%bp
-	movw 4(%bp),%ax
-	movw 6(%bp),%bx
-	movw %ax,%bp
-	movw %bx,%cx
-	movw $0x01301,%ax
-	movw $0x000c,%bx
-	movb $0,%dl
-	int $0x10
-	popw %bp
-	ret
 	
 hellomsg:
 	.ascii "hello world!"
@@ -73,7 +77,7 @@ gdt:
         .word 0,0,0,0
         .word 0xffff
         .word 0
-        .word 0x9a00
+        .word 0x9b00
         .word 0x00cf
         .word 0xffff
         .word 0
@@ -81,5 +85,5 @@ gdt:
         .word 0x00cf
 gdtptr:
         .word (gdtptr-gdt-1)
-        .long gdt
+       .long gdt
 	
