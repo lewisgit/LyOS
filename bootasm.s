@@ -8,10 +8,10 @@ start:
 	pushw %ax
 	call printmsg
 	
-	xorw %ax，%ax
-	movw %ax, %ds
-	movw %ax, %es
-	movw %ax, %ss
+	xorw %ax,%ax
+	movw %ax,%ds
+	movw %ax,%es
+	movw %ax,%ss
 
 
 
@@ -37,37 +37,20 @@ movl %cr0,%eax
 orl $0x2,%eax
 movl %eax,%cr0
 
-ljmp $0x08,start32
+ljmp $0x08,$start32
 
 start32:
-	movw $0x10,%eax
-	movw %eax,%ds
-	movw %eax,%ss
-	movw %eax,%es
-	movw $0,%eax
-	movw %eax,%gs
-	movew %eax,fs
+	movw $0x10,%ax
+	movw %ax,%ds
+	movw %ax,%ss
+	movw %ax,%es
+	movw $0,%ax
+	movw %ax,%gs
+	movw %ax,%fs
 
 	movl $start,%esp
-;	call bootmain
 
 spin: jmp spin
-
-.p2align 2
-gdt: 
-	.word 0,0,0,0
-	.word 0xffff
-	.word 0
-	.word 0x9a00
-	.word 0x00cf
-	.word 0xffff
-	.word 0
-	.word 0x9200
-	.word 0x00cf
-gdtptr:
-	.word (gdtptr-gdt-1)
-	.long gdt
-
 
 printmsg:
 	pushw %bp
@@ -78,10 +61,25 @@ printmsg:
 	movw %bx,%cx
 	movw $0x01301,%ax
 	movw $0x000c,%bx
-	movw $0 %dl
+	movb $0,%dl
 	int $0x10
+	popw %bp
 	ret
 	
 hellomsg:
-	.byte "hello world!"
+	.ascii "hello world!"
+.p2align 2
+gdt:
+        .word 0,0,0,0
+        .word 0xffff
+        .word 0
+        .word 0x9a00
+        .word 0x00cf
+        .word 0xffff
+        .word 0
+        .word 0x9200
+        .word 0x00cf
+gdtptr:
+        .word (gdtptr-gdt-1)
+        .long gdt
 	
