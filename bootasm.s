@@ -67,11 +67,42 @@ start32:
 	movw %ax,%fs
 
 	movl $start,%esp
+        movl $intopmsuc,%ax
+        movl $(80*20),%bx
+        pushl %ebx
+        pushl %eax
+        call printmsg32
+	popl %eax
+	popl %ebx
 
 spin: jmp spin
+
+printmsg32:
+        pushl %ebp
+        movl %esp,%ebp
+        movl 8(%ebp),%eax
+        movl 12(%ebp),%ebx
+	movl %eax,%esi
+	movl %ebx,%edi
+	movb $0xc,%ah
+	cld
+startprint:
+	lodsb
+	testb %al,%al
+	jz finishprint
+	movl videoselector,%ebx
+	movw %ax,(%ebx,%edi,1)
+	addl $2,%edi
+	jmp startprint
+        
+finishprint: 
+	popl %ebp
+	ret
 	
 hellomsg:
 	.ascii "hello world!"
+intopmsuc:
+	.ascii "we have opened the protection mode!"
 .p2align 2
 gdt:
         .word 0,0,0,0
@@ -86,4 +117,6 @@ gdt:
 gdtptr:
         .word (gdtptr-gdt-1)
        .long gdt
-	
+
+videoselector:
+	.long 0xb8000	
