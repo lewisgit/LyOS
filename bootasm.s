@@ -2,12 +2,7 @@
 .globl start
 start:
 
-	movw $hellomsg,%ax
-	movw $12,%bx
-	pushw %bx
-	pushw %ax
-	call printmsg
-	
+
 	xorw %ax,%ax
 	movw %ax,%ds
 	movw %ax,%es
@@ -40,24 +35,9 @@ movl %eax,%cr0
 ljmp $8,$start32
 
 
-
-printmsg:
-        pushw %bp
-        movw %sp,%bp
-        movw 4(%bp),%ax
-        movw 6(%bp),%bx
-        movw %ax,%bp
-        movw %bx,%cx
-        movw $0x01301,%ax
-        movw $0x000c,%bx
-        movb $0,%dl
-        int $0x10
-        popw %bp
-        ret
-
-
 .code32
 start32:
+	cli
 	movw $0x10,%ax
 	movw %ax,%ds
 	movw %ax,%ss
@@ -67,13 +47,15 @@ start32:
 	movw %ax,%fs
 
 	movl $start,%esp
-        movl $intopmsuc,%ax
-        movl $(80*20),%bx
+        movl $intopmsuc,%eax
+        movl $(80*20),%ebx
         pushl %ebx
         pushl %eax
         call printmsg32
 	popl %eax
 	popl %ebx
+
+	call bootmain
 
 spin: jmp spin
 
@@ -94,15 +76,14 @@ startprint:
 	movw %ax,(%ebx,%edi,1)
 	addl $2,%edi
 	jmp startprint
-        
-finishprint: 
+
+finishprint:
 	popl %ebp
 	ret
-	
-hellomsg:
-	.ascii "hello world!"
+
 intopmsuc:
-	.ascii "we have opened the protection mode!"
+	.ascii "protection mode"
+	.byte 0
 .p2align 2
 gdt:
         .word 0,0,0,0
@@ -119,4 +100,4 @@ gdtptr:
        .long gdt
 
 videoselector:
-	.long 0xb8000	
+	.long 0xb8000
