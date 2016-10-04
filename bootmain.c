@@ -29,7 +29,8 @@ void bootmain(void){
 			stosb(pa+ph->filesz,0,ph->memsz-ph->filesz);
 		}
 	}
-	entryk=(void(*)(void))(elf->entry);
+	entryk=(void(*)(void))((uchar*)elf->entry);
+	//entryk=(void(*)(void))(0x1100c);
 	entryk();
 }
 void waitdisk(){

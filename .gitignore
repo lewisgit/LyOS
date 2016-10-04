@@ -1,3 +1,7 @@
 bootblock
 *.o
 *.asm
+*~
+*.txt
+*.d
+

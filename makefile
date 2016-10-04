@@ -22,5 +22,5 @@ bootblock: bootasm.s bootmain.c
 
 entry: entry.c kernel.ld
 	#gcc -O3 entry.c -o entry
-	$(CC) $(CFLAGS) -nostdinc -I. -c entry.c
+	$(CC) $(CFLAGS) -O -nostdinc -I. -c entry.c
 	$(LD) $(LDFLAGS) -T kernel.ld -o entry entry.o
